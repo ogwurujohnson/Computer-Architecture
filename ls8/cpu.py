@@ -44,28 +44,56 @@ class CPU:
                        new_line = int(line[:8], 2)
                        program.append(new_line)
            address = 0
-           for instruction in program:
-               self.ram[address] = instruction
+            with open(self.program_filename) as f:
+                for line in f:
+                    # deal with comments
+                    # split before and after any comment symbol '#'
+                    comment_split = line.split("#")
+
+                    # convert the pre-comment portion (to the left) from binary to a value
+                    # extract the first part of the split to a number variable
+                    # and trim whitespace
+                    num = comment_split[0].strip()
+
+                    # ignore blank lines / comment only lines
+                    if len(num) == 0:
+                        continue
+
+                    # set the number to an integer of base 2
+                    value = int(num, 2)
+                    # print the value in binary and in decimal
+                    # uncomment for debugging: print(f"{value:08b}: {value:d}")
+
+                    # add the value in to the memory at the index of address
+                    self.ram[address] = value
+
+                    # increment the address
                address += 1
+
        except FileNotFoundError:
            print(f"{sys.argv[0]}: {sys.argv[1]} not found")
            sys.exit(2)
+
    def alu(self, op, reg_a, reg_b):
        """ALU operations."""
+
        if op == "ADD":
-           self.register[reg_a] += self.register[reg_b]
-       #elif op == "SUB": etc
+            self.reg[reg_a] += self.reg[reg_b]
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
        else:
            raise Exception("Unsupported ALU operation")
+
    def trace(self):
        """
        Handy function to print out the CPU state. You might want to call this
        from run() if you need help debugging.
        """
+
        print(f"TRACE: %02X | %02X %02X %02X |" % (
            self.pc,
-           #self.fl,
-           #self.ie,
+            # self.fl,
+            # self.ie,
            self.ram_read(self.pc),
            self.ram_read(self.pc + 1),
            self.ram_read(self.pc + 2)
