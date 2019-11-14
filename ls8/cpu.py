@@ -1,5 +1,14 @@
 """CPU functionality."""
 import sys
+
+PRN = 0b01000111
+LDI = 0b10000010
+HLT = 0b00000001
+MUL = 0b10100010
+PUSH = 0b01000101
+POP = 0b01000110
+
+
 class CPU:
    """Main CPU class."""
    def __init__(self):
